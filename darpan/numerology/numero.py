@@ -1,6 +1,39 @@
 import string
 
+
+
+
+
 class Numero(object):
+    def __init__(self, name, birthday=''):
+        self.name = name
+        self.birthday = birthday
+    
+    def get_number_from_string(self, name):
+        return self.reduce(str(name).strip().lower())
+        
+    def get_life_path_number(self):
+        return self.get_number_from_string(self.birthday)
+    
+    def get_destiny_number(self):
+        return self.get_number_from_string(self.name)
+        
+    def reduce(self, letters):
+        n = sum([self.translate_letter(letter) for letter in letters])
+        if n>9 and n!=11 and n!=22 and n!=33:
+            return self.reduce(str(n))
+        return n
+        
+    def translate_letter(self, letter):
+        letter = letter.lower()
+        if letter in string.ascii_lowercase:
+            return ((ord(letter) - ord('a'))%9 + 1)
+        elif letter in string.digits:
+            return int(letter)
+        return 0
+
+
+class NumeroOld(object):
     def __init__(self, name, birthday='', alternate_name=''):
         self.name = self.format_name(name)
         
@@ -28,13 +61,17 @@ class Numero(object):
         else:
             self.has_alternate_name = False
             
-                
+    def get_life_path_number(self):
+        return self.birthday_number
+    
+    def get_destiny_number(self):
+        return self.name_number
         
     def format_name(self, name):
         return ' '.join([n.capitalize() for n in name.lower().split()])
     
     def format_birthday(self, birthday):
-        return '/'.join(''.join([d  if d in string.digits else ' ' for d in birthday]).split())
+        return '/'.join(''.join([d  if d in string.digits else ' ' for d in str(birthday)]).split())
         
     def dict(self):
         d = dict()
@@ -64,7 +101,6 @@ class Numero(object):
         if n>9 and n!=11 and n!=22 and n!=33:
             return self.reduce(str(n))
         return n
-            
     
     def translate(self, letters):
         return [self.translate_letter(letter) for letter in letters]
@@ -77,9 +113,9 @@ class Numero(object):
             return int(letter)
         return 0
         
+if __name__ == '__main__':
+    print(NumeroOld('Felipe Andrade  holanda'))
+    print(NumeroOld('Felipe Andrade  holanda', '22 12/1986'))
+    print(NumeroOld('Felipe Andrade  holanda', '22 12/1986', 'Darpan Deva'))
 
-print(Numero('Felipe Andrade  holanda'))
-print(Numero('Felipe Andrade  holanda', '22 12/1986'))
-print(Numero('Felipe Andrade  holanda', '22 12/1986', 'Darpan Deva'))
-
-print(Numero('Emerson Labella Bering', '3/11/1995'))
+    print(NumeroOld('Emerson Labella Bering', '3/11/1995'))

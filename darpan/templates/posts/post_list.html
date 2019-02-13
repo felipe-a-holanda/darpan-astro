@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+    {% block content %}
+        <ul>
+            {% for post in post_list %}
+                <li> <h4>{{ post.title}}</h4> <p>{{post.text}}</p>
+                {% for tag in post.tags.names %} {% if tag != 'numerology' %}<a href="{% url 'numerology:posts' tag %}">{{tag}}</a>{% endif %}{%endfor%}
+                </li>
+            {% endfor %}
+        </ul>
+        
+        <h1>Feed: Novo Post {{current_tags}}</h1>
+        <form method="POST" class="post-form">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save btn btn-default">Save</button>
+        </form>
+        
+    {% endblock content %}

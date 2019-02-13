@@ -10,6 +10,14 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.conf import settings
 
 
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from timezone_field import TimeZoneField
+import datetime
+import pytz
+
+
 class UserManager(BaseUserManager):
     def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
         now = timezone.now()
@@ -53,8 +61,8 @@ class User(AbstractBaseUser, PermissionsMixin):
             },
         )
 
-    first_name = models.CharField(_('first name'), max_length=30)
-    last_name = models.CharField(_('last name'), max_length=30)
+    first_name = models.CharField(_('first name'), max_length=127)
+    last_name = models.CharField(_('last name'), max_length=127)
     email = models.EmailField(_('email address'), max_length=255, blank=True)
     is_staff = models.BooleanField(_('staff status'), default=False, help_text=_('Designates whether the user can log into this admin site.'))
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'))
@@ -81,3 +89,69 @@ class User(AbstractBaseUser, PermissionsMixin):
         
     def email_user(self, subject, message, from_email=None):
         send_mail(subject, message, from_email, [self.email])
+
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
+    full_name = models.CharField(_('full name'), max_length=255, default='', blank=True)
+    alternative_name = models.CharField(_('alternative name'), max_length=255, default='', blank=True)
+    
+    
+    photo = models.FileField(verbose_name=_("Profile Picture"), upload_to="profiles", max_length=255, null=True, blank=True)
+    
+    
+    phone = models.CharField(max_length=20, blank=True, default='')
+    bio = models.TextField(default='', blank=True)
+    organization = models.CharField(max_length=100, default='', blank=True)
+    
+    website = models.URLField(default='', blank=True)
+    facebook = models.URLField(default='', blank=True)
+    instagram = models.URLField(default='', blank=True)
+    
+    #Local Time:
+    birthdate = models.DateField(null=True, blank=True)
+    birthtime = models.TimeField(null=True, blank=True)
+    
+    #utc time:
+    birthday = models.DateTimeField(null=True, blank=True)
+    
+    city = models.CharField(max_length=100, default='', blank=True)
+    country = models.CharField(max_length=100, default='', blank=True)
+    timezone = TimeZoneField(null=True, blank=True)
+    
+    
+    
+    def __str__(self):
+        return self.user.username
+        
+    def convert_timezone(self):
+        if self.birthdate:
+            if self.birthtime and self.timezone:
+                birthday = datetime.datetime.combine(self.birthdate, self.birthtime)
+                local_moment = self.timezone.localize(birthday)
+                
+            else:
+                birthday = datetime.datetime.combine(self.birthdate, datetime.time(12,0))
+                local_moment = pytz.utc.localize(birthday)
+            
+            
+            utc_moment = local_moment.astimezone(pytz.utc)
+            self.birthday = utc_moment
+        
+    
+    def save(self, *args, **kwargs):
+        self.convert_timezone()
+        self.full_name = self.user.get_full_name()
+        super().save(*args, **kwargs)
+    
+
+
+@receiver(post_save, sender=User)    
+def create_profile(sender, **kwargs):
+    user = kwargs["instance"]
+    if kwargs["created"]:
+        user_profile = UserProfile(user=user)
+        user_profile.save()
+    else:
+        user.profile.save()

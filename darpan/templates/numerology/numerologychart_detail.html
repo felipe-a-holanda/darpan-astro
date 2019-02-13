@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+    {% block content %}
+    <h2>{{object.full_name}}</h4>
+    <h4>Destiny Number: <a href="{% url 'numerology:posts' object.destiny_number %}">{{object.destiny_number}}</a></h3>
+    <h3>{{object.birthday}}</h4>
+    <h4>Life Path Number: <a href="{% url 'numerology:posts' object.life_path_number %}">{{object.life_path_number}}</a></h3>
+    <h3>{{object.alternative_name}}</h4>
+    <h4>Alternative Destiny Number: <a href="{% url 'numerology:posts' object.alternative_destiny_number %}">{{object.alternative_destiny_number}}</a></h3>
+    {% endblock content %}

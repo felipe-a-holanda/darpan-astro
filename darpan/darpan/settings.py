@@ -39,11 +39,15 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 
-VENDOR_APPS = []
+VENDOR_APPS = [
+    'taggit',
+    'django_extensions',
+]
 
 USER_APPS = [
-    #'users.apps.UsersConfig',
-    #'numerology.apps.NumerologyConfig',
+    'users.apps.UsersConfig',
+    'posts.apps.PostsConfig',
+    'numerology.apps.NumerologyConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + VENDOR_APPS + USER_APPS

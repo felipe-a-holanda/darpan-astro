@@ -14,12 +14,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from django.views.generic.base import TemplateView
+from .views import *
+
+
+app_name = 'numerology'
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='index.html')),
-    path('admin/', admin.site.urls),
-    path('numerology/', include('numerology.urls', namespace='numerology')),
-    path('post/', include('posts.urls', namespace='post')),
+    path('', PostListFormView.as_view()),
+    path('post/create/', PostCreate.as_view(), name='post_create'),
+    path('chart/<str:pk>', NumerologyDetailView.as_view()),
+    path('<str:tag>', PostListFormView.as_view(), name='posts'),
+    path('<str:tag>/<str:tag2>', PostListFormView.as_view(), name='posts'),
 ]
