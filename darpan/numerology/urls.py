@@ -22,7 +22,7 @@ from .views import *
 app_name = 'numerology'
 
 urlpatterns = [
-    path('', PostListFormView.as_view()),
+    path('', PostListFormView.as_view(), name='home'),
     path('post/create/', PostCreate.as_view(), name='post_create'),
     path('chart/<str:pk>', NumerologyDetailView.as_view()),
     path('<str:tag>', PostListFormView.as_view(), name='posts'),

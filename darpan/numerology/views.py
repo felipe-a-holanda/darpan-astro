@@ -31,11 +31,13 @@ class PostListView(ListView):
             tags.append(self.kwargs['tag2'])
         context['current_tags'] = tags
         context['form'] = PostNumerologyForm()
+        context['users'] = NumerologyChart.objects.filter(tags__name__in=tags)
         return context
     
     def get_queryset(self):
         
         posts = Post.objects.filter(tags__name__in=['numerology'])
+        
         if 'tag' in self.kwargs:
             tag = self.kwargs['tag']
             posts = posts.filter(tags__name__in=[tag])
