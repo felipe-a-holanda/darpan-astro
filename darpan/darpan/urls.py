@@ -26,7 +26,17 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('numerology/', include('numerology.urls', namespace='numerology')),
     path('post/', include('posts.urls', namespace='post')),
+    path('chart/', include('charts.urls', namespace='chart')),
+    path('astro/', include('astrology.urls', namespace='astro')),
 ]
 
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
 
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+        # For django versions before 2.0:
+        # url(r'^__debug__/', include(debug_toolbar.urls)),
+
+    ] + urlpatterns
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

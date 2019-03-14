@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -7,11 +8,15 @@ from timezone_field import TimeZoneField
 import datetime
 import pytz
 
+from autoslug import AutoSlugField
+
 
 class Chart(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='chart', on_delete=models.CASCADE)
     
     name = models.CharField(_('full name'), max_length=255, default='', blank=True)
+    
+    slug = AutoSlugField(populate_from='name', always_update=True, unique_with=('owner'))
     
     #local time:
     date = models.DateField(null=True, blank=True)
@@ -33,7 +38,7 @@ class Chart(models.Model):
                 local_moment = self.timezone.localize(datetime_utc)
                 
             else:
-                datetime_utc = datetime.datetime.combine(self.birthdate, datetime.time(12,0))
+                datetime_utc = datetime.datetime.combine(self.date, datetime.time(12,0))
                 local_moment = pytz.utc.localize(datetime_utc)
             
             
@@ -47,3 +52,7 @@ class Chart(models.Model):
     
     def __str__(self):
         return self.name
+        
+    def get_absolute_url(self):
+        return reverse('chart:detail', kwargs={'username':self.owner.username, 'pk': self.pk})
+        

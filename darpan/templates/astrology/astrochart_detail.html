@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h1>Chart Detail</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-lg-9">
+            <div class="single-blog-area blog-style-2 mb-50 wow fadeInUp" data-wow-delay="0.2s" data-wow-duration="1000ms">
+                <div class="col-12 col-md-6">
+                    <!-- Blog Content -->
+                    <div class="single-blog-content">
+                        <h4><a href="#" class="post-headline">{{ astrochart.chart.name }}</a></h4>
+                        <div class="line"></div>
+                        <p>{{ astrochart.chart.date }} {{ astrochart.chart.time }} {{astrochart.chart.city}}</p>
+                        <table class="table">
+                        {% for planet in astrochart.planets %}
+                        <tr>
+                          <td>{{ planet.name }}</td>
+                          <td><a href="{% url 'astro:planetsign' planet.name planet.sign %}">{{ planet.sign }}</a></td>
+                          <td>{{ planet.angle }}</td>
+                        </tr>
+                        {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+{% endblock content %}

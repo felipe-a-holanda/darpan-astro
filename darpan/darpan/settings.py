@@ -26,7 +26,7 @@ SECRET_KEY = 'pk^fcfp$+cqj$*!hy+n)%euq1v+&41&&8icx9bjbjsh8_oz-0e'
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'darpandeva.com']
-
+INTERNAL_IPS = ['127.0.0.1',]
 
 # Application definition
 
@@ -40,14 +40,19 @@ DJANGO_APPS = [
 ]
 
 VENDOR_APPS = [
+    'formtools',
     'taggit',
     'django_extensions',
+    'debug_toolbar',
 ]
 
 USER_APPS = [
     'users.apps.UsersConfig',
     'posts.apps.PostsConfig',
+    'charts.apps.ChartsConfig',
     'numerology.apps.NumerologyConfig',
+    'astrology.apps.AstrologyConfig',
+    'hds.apps.HdsConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + VENDOR_APPS + USER_APPS
@@ -60,6 +65,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'darpan.urls'
@@ -136,3 +143,21 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+
+DEBUG_TOOLBAR_PANELS = [
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.logging.LoggingPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+
+    'debug_toolbar.panels.profiling.ProfilingDebugPanel',
+]

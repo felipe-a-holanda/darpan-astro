@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h1>Import Charts</h1>
+<div class="container">
+  <form action="{% url 'charts:import' %}" class="newsletterForm" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn original-btn">Import</button>
+  </form>
+</div>
+{% endblock content %}

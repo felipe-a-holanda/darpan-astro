@@ -1,0 +1,9 @@
+Django==2.1.4
+django-autoslug==1.9.4
+django-reverse-admin==2.3.0
+django-taggit==0.23.0
+django-timezone-field==3.0
+networkx==2.2
+pyswisseph==2.0.0.post2
+pytz==2018.7
+django-formtools==2.1

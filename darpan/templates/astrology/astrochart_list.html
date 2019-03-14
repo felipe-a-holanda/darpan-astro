@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h1>Chart List</h1>
+<div class="container">
+  <table class="table">
+    <thead>
+    <tr>
+    <th>Name</th>
+    <th>Date</th>
+    <th>Time</th>
+    <th>City</th>
+    <th>Sun</th>
+    <th>Moon</th>
+    <th>Asc</th>
+    </tr>
+    </thead>
+    <tbody>
+
+
+    {% for astro in astrochart_list %}
+
+    <tr>
+      <td><a href="{% url 'astro:detail' user.username astro.pk%}" class="post-headline">{{ astro.chart.name }}</a></td>
+      <td>{{ astro.chart.date }}</td>
+      <td>{{ astro.chart.time }}</td>
+      <td>{{ astro.chart.city }}</td>
+
+      <td><a href="{% url 'astro:planetsign' astro.planets.0.field astro.planets.0.sign %}">{{astro.planets.0.sign}}</a></td>
+      <td><a href="{% url 'astro:planetsign' astro.planets.1.field astro.planets.1.sign %}">{{astro.planets.1.sign}}</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+
+</div>
+{% endblock content %}

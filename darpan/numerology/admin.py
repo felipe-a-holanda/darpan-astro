@@ -18,4 +18,8 @@ class NumerologyAdmin(admin.ModelAdmin):
     
     list_filter = ('destiny_number', 'life_path_number')
 
+    search_fields = ('full_name',)
+
+    
+
 admin.site.register(NumerologyChart, NumerologyAdmin)

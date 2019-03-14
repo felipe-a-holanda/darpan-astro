@@ -2,13 +2,15 @@
 {% load static %}
     {% block content %}
 <div class="blog-wrapper section-padding-100 clearfix">
-        
+
 
         <div class="container">
             <div class="row">
                 <div class="col-12 col-lg-9">
+
                     <h3> Posts {{current_tags|join:" // "}} </h3>
-                    
+                    <h2>Topic: {{topic}}</h2>
+
                     {% for post in post_list %}
                     <!-- Single Blog Area  -->
                     <div class="single-blog-area blog-style-2 mb-50 wow fadeInUp" data-wow-delay="0.2s" data-wow-duration="1000ms">
@@ -25,9 +27,9 @@
                                 <!-- Blog Content -->
                                 <div class="single-blog-content">
                                     <div class="line"></div>
-                                    
+
                                     {% for tag in post.tags.names %} {% if tag != 'numerology' %}<a class="post-tag" href="{% url 'numerology:posts' tag %}">{{tag}}</a>{% endif %}{%endfor%}
-                                    
+
                                     <h4><a href="#" class="post-headline">{{ post.title }}</a></h4>
                                     <p>{{ post.text }}</p>
                                     <div class="post-meta">
@@ -45,8 +47,8 @@
                         <a href="#" class="btn original-btn">Read More</a>
                     </div>
                 </div>
-                
-                
+
+
                 <div class="col-12" >
                     <h1>Novo Post </h1>
                     <form method="POST" class="post-form">{% csrf_token %}
@@ -58,8 +60,8 @@
 
             </div>
         </div>
-        
-        
+
+
         <div class="container">
             <div class="row">
 
@@ -67,12 +69,12 @@
                 <div class="col-12 col-md-12 col-lg-12">
                     <div class="post-sidebar-area">
 
-                        
+
 
                         <!-- Widget Area -->
                         <div class="sidebar-widget-area">
                             <h5 class="title">Pessoas com o mesmo numero</h5>
-                            
+
                             <div class="card-columns">
                                 <!-- Single Blog Post -->
                                 {% for user in users %}
@@ -88,7 +90,7 @@
                                                 <a href="#" class="post-tag">Numerology</a>
                                                 <h4><a href="#" class="card-title post-headline">{{ user.full_name }}</a></h4>
                                                 <h3><a href="#" class="card-title post-headline">{{ user.alternative_name }}</a></h3>
-                                  
+
                                                 <div class="post-meta card-text">
                                                     <p><a href="#">Life Path:{{ user.life_path_number}}</a></p>
                                                     <p><a href="#">Destiny: {{ user.destiny_number}}</a></p>
@@ -98,20 +100,20 @@
                                     </div>
                                 </div>
                                 {% endfor %}
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        
-        
 
-        
-       
 
-        
+
+
+
+
+
+
 </div>
 
 

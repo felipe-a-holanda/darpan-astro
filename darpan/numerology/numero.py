@@ -61,6 +61,9 @@ class NumeroOld(object):
         else:
             self.has_alternate_name = False
             
+    def list(self):
+        return self.name_numbers_list        
+    
     def get_life_path_number(self):
         return self.birthday_number
     
@@ -114,6 +117,9 @@ class NumeroOld(object):
         return 0
         
 if __name__ == '__main__':
+    
+    print(NumeroOld('Protector').list())
+    
     print(NumeroOld('Felipe Andrade  holanda'))
     print(NumeroOld('Felipe Andrade  holanda', '22 12/1986'))
     print(NumeroOld('Felipe Andrade  holanda', '22 12/1986', 'Darpan Deva'))

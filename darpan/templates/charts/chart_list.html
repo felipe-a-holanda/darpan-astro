@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h1>Chart List</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-lg-9">
+        {% for chart in chart_list %}
+            <div class="single-blog-area blog-style-2 mb-50 wow fadeInUp" data-wow-delay="0.2s" data-wow-duration="1000ms">
+                <div class="col-12 col-md-6">
+                    <!-- Blog Content -->
+                    <div class="single-blog-content">
+                        <h4><a href="{% url 'chart:detail' user.username chart.pk%}" class="post-headline">{{ chart.name }}</a></h4>
+                        <div class="line"></div>
+                        <p>{{ chart.date }} {{ chart.time }} {{chart.city}}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+
+
+
+
+    <!-- Subscribe Modal -->
+    <div class="subscribe-newsletter-area">
+        <div class="modal fade" id="newChartModal" tabindex="-1" role="dialog" aria-labelledby="newChartModal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-body">
+                        <h5 class="title">New Chart</h5>
+                        <form action="{% url 'charts:new' %}" class="newsletterForm" method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <input type="email" name="email" id="subscribesForm2" placeholder="Your e-mail here">
+                            <button type="submit" class="btn original-btn">New</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    
+    
+<div class="subscribe-btn">
+<a href="#" class="btn subscribe-btn" data-toggle="modal" data-target="#newChartModal">New</a>
+</div>
+    
+    
+    
+</div>    
+{% endblock content %}
