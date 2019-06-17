@@ -10,7 +10,7 @@
 
                     <h3> Posts {{current_tags|join:" // "}} </h3>
                     <h2>Topic: {{topic}}</h2>
-
+                    <h3></h3>
                     {% for post in post_list %}
                     <!-- Single Blog Area  -->
                     <div class="single-blog-area blog-style-2 mb-50 wow fadeInUp" data-wow-delay="0.2s" data-wow-duration="1000ms">
@@ -88,7 +88,7 @@
                                             <!-- Post Content -->
                                             <div class="post-content">
                                                 <a href="#" class="post-tag">Numerology</a>
-                                                <h4><a href="#" class="card-title post-headline">{{ user.full_name }}</a></h4>
+                                                <h4><a href="#" class="card-title post-headline">{{ user.chart.name }}</a></h4>
                                                 <h3><a href="#" class="card-title post-headline">{{ user.alternative_name }}</a></h3>
 
                                                 <div class="post-meta card-text">

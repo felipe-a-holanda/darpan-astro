@@ -3,6 +3,9 @@
 {% block content %}
 <h1>Chart List</h1>
 <div class="container">
+  <div class="row">
+    <h2><a href="{% url 'charts:new' %}">New Chart</a></h2>
+    </div>
     <div class="row">
         <div class="col-12 col-lg-9">
         {% for chart in chart_list %}
@@ -11,8 +14,15 @@
                     <!-- Blog Content -->
                     <div class="single-blog-content">
                         <h4><a href="{% url 'chart:detail' user.username chart.pk%}" class="post-headline">{{ chart.name }}</a></h4>
+
+                        <p>{{ chart.date }} {{ chart.time }} </p>
+                        <p>{{chart.city}}</p>
+
+                        <a href="{% url 'astro:detail' chart.owner chart.astrochart.pk %}">Astrology</a>
+                        <a href="{% url 'hds:detail' chart.owner chart.ravechart.pk %}">Human Design</a>
+
                         <div class="line"></div>
-                        <p>{{ chart.date }} {{ chart.time }} {{chart.city}}</p>
+
                     </div>
                 </div>
             </div>
@@ -44,13 +54,13 @@
     </div>
 
 
-    
-    
+
+
 <div class="subscribe-btn">
 <a href="#" class="btn subscribe-btn" data-toggle="modal" data-target="#newChartModal">New</a>
 </div>
-    
-    
-    
-</div>    
+
+
+
+</div>
 {% endblock content %}

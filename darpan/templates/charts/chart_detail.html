@@ -10,15 +10,19 @@
                     <!-- Blog Content -->
                     <div class="single-blog-content">
                         <h4><a href="#" class="post-headline">{{ chart.name }}</a></h4>
+
+                        <p>{{ chart.date }} {{ chart.time }} </p>
+                        <p>{{chart.city}}</p>
+
                         <div class="line"></div>
-                        <p>{{ chart.date }} {{ chart.time }} {{chart.city}}</p>
+                        <a href="{% url 'chart:edit' chart.owner chart.pk %}">Edit</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    
-    
-</div>    
+
+
+</div>
 {% endblock content %}

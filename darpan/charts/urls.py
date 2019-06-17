@@ -24,14 +24,10 @@ app_name = 'charts'
 urlpatterns = [
     path('', ChartListView.as_view(), name='list'),
     path('new', ChartCreateView.as_view(), name='new'),
-    path('import', ChartImportView.as_view(), name='import'),
-    path('import2', MultipleChartCreate.as_view(), name='import2'),
     path('wizard', ContactWizard.as_view(), name='wizard'),
 
+    path('<str:username>/<int:pk>/edit', ChartUpdateView.as_view(), name='edit'),
     path('<str:username>/<int:pk>', ChartDetailView.as_view(), name='detail'),
 
-    #path('post/create/', PostCreate.as_view(), name='post_create'),
-    #path('chart/<str:pk>', NumerologyDetailView.as_view()),
-    #path('<str:tag>', PostListFormView.as_view(), name='posts'),
-    #path('<str:tag>/<str:tag2>', PostListFormView.as_view(), name='posts'),
+
 ]

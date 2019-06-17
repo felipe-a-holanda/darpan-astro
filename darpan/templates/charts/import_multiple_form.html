@@ -37,3 +37,11 @@
     </form>
 </div>
 {% endblock content %}
+
+{% block footer %}
+{{ wizard.form.media }}
+{{ wizard.form.management_form.media }}
+{% for form in wizard.form.forms %}
+{{ form.media }}
+{% endfor %}
+{% endblock %}

@@ -27,26 +27,37 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'darpandeva.com']
 INTERNAL_IPS = ['127.0.0.1',]
-
+SITE_ID = 1
 # Application definition
 
 DJANGO_APPS = [
+    'dal',
+    'dal_select2',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 ]
 
 VENDOR_APPS = [
     'formtools',
     'taggit',
+    'cities_light',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
     'django_extensions',
     'debug_toolbar',
 ]
 
+
+
 USER_APPS = [
+    'cities.apps.CitiesConfig',
     'users.apps.UsersConfig',
     'posts.apps.PostsConfig',
     'charts.apps.ChartsConfig',
@@ -82,6 +93,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'astrology.context_processors.consts',
             ],
         },
     },
@@ -102,6 +114,15 @@ DATABASES = {
 
 
 AUTH_USER_MODEL = 'users.User'
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -143,6 +164,15 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+
+CITIES_LIGHT_APP_NAME = 'cities'
+MIGRATION_MODULES = {
+            'cities_light': None
+        }
+
+#CITIES_LIGHT_INCLUDE_COUNTRIES = ['BR']
+#TRANSLATION_LANGUAGES = ['en', 'pt', 'es', 'fr', 'de']
 
 
 DEBUG_TOOLBAR_PANELS = [

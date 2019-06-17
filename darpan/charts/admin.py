@@ -5,8 +5,9 @@ from .models import Chart
 
 
 class ChartAdmin(admin.ModelAdmin):
-    list_display = ('name', 'datetime_utc', 'owner', 'slug')
+    list_display = ('name', 'datetime_utc', 'owner', 'country', 'city', 'slug')
     readonly_fields = ('datetime_utc', 'slug')
 
-admin.site.register(Chart, ChartAdmin)
+    autocomplete_fields = ['country', 'city',]
 
+admin.site.register(Chart, ChartAdmin)

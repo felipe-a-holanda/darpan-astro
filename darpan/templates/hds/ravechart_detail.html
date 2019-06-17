@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h1>Rave Chart Detail</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-lg-9">
+            <div class="single-blog-area blog-style-2 mb-50 wow fadeInUp" data-wow-delay="0.2s" data-wow-duration="1000ms">
+                <div class="col-12 col-md-6">
+                    <!-- Blog Content -->
+                    <div class="single-blog-content">
+                        <h4><a href="#" class="post-headline">{{ ravechart.chart.name }}</a></h4>
+                        <div class="line"></div>
+                        <p>{{ ravechart.chart.date }} {{ ravechart.chart.time }} {{ravechart.chart.city}}</p>
+                        
+                        
+                        
+                        <h1>Defined Centers</h1>
+                        <table class="table">
+                        {% for center in ravechart.defined_centers.all %}
+                        
+                        <tr>
+                          <td><a href={{center.get_absolute_url}}>{{ center.name }}</a></td>
+                         
+                        </tr>
+                        {% endfor %}
+                        </table>
+                        
+                        
+                        <h1>Undefined Centers</h1>
+                        <table class="table">
+                        {% for center in ravechart.undefined_centers.all %}
+                        
+                        <tr>
+                          <td><a href={{center.get_absolute_url}}>{{ center.name }}</a></td>
+                         
+                        </tr>
+                        {% endfor %}
+                        </table>
+                        
+                        
+                        <h1>Channels</h1>
+                        <table class="table">
+                        {% for channel in ravechart.channels.all %}
+                        
+                        <tr>
+                          <td><a href={{channel.get_absolute_url}}>{{ channel.name }}</a></td>
+                         
+                        </tr>
+                        {% endfor %}
+                        </table>
+                        
+                        
+                        
+                        <h1>Gates</h1>
+                        <table class="table">
+                        {% for gate in ravechart.gates.all %}
+                        
+                        <tr>
+                          <td><a href={{gate.get_absolute_url}}>{{ gate }}</a></td>
+                         
+                        </tr>
+                        {% endfor %}
+                        </table>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+{% endblock content %}

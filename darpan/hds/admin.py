@@ -39,7 +39,7 @@ class RaveChartAdmin(ReverseModelAdmin):
     get_datetime.short_description = 'Birthday'  #Renames column head
 
 
-    list_display = ('get_name', 'get_owner', 'get_datetime')
+    list_display = ('get_name', 'get_owner', 'get_datetime', )
     readonly_fields = ('gates', 'channels')
 
 

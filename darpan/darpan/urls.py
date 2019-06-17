@@ -21,13 +21,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('accounts/', include('allauth.urls')),
+    #path('autocomplete/', include('dal.urls')),
+    path('city/', include('cities.urls', namespace='city')),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('template', TemplateView.as_view(template_name='template.html')),
     path('admin/', admin.site.urls),
-    path('numerology/', include('numerology.urls', namespace='numerology')),
+
     path('post/', include('posts.urls', namespace='post')),
+
     path('chart/', include('charts.urls', namespace='chart')),
+    path('numerology/', include('numerology.urls', namespace='numerology')),
     path('astro/', include('astrology.urls', namespace='astro')),
+    path('hds/', include('hds.urls', namespace='hds')),
 ]
 
 if settings.DEBUG:

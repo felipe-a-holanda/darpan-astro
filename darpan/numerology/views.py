@@ -21,29 +21,24 @@ class NumerologyDetailView(DetailView):
 
 class PostListView(ListView):
     model = Post
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        tags = []
-        if 'tag' in self.kwargs:
-            tags.append(self.kwargs['tag'])
-        if 'tag2' in self.kwargs:
-            tags.append(self.kwargs['tag2'])
+        tags = self.request.GET.getlist('tag', [])
+        tags = self.kwargs.get('tag',[])
         context['current_tags'] = tags
         context['form'] = PostNumerologyForm()
         context['users'] = NumerologyChart.objects.filter(tags__name__in=tags)
         return context
-    
+
     def get_queryset(self):
-        
+
         posts = Post.objects.filter(tags__name__in=['numerology'])
-        
-        if 'tag' in self.kwargs:
-            tag = self.kwargs['tag']
-            posts = posts.filter(tags__name__in=[tag])
-        if 'tag2' in self.kwargs:
-            tag = self.kwargs['tag2']
-            posts = posts.filter(tags__name__in=[tag])
+
+        tags = self.request.GET.getlist('tag', [])
+        tags = self.kwargs.get('tag',[])
+        if tags:
+            posts = posts.filter(tags__name__in=tags)
         return posts
 
 
@@ -54,8 +49,8 @@ class PostListView(ListView):
 class PostCreate(CreateView):
     model = Post
     fields = ['title', 'text', 'source', 'tags']
-    
-    
+
+
     def form_valid(self, form):
         form.instance.owner = self.request.user
         tags = form.cleaned_data['tags']
@@ -63,7 +58,7 @@ class PostCreate(CreateView):
         if 'tag' in self.kwargs:
             tags.append(self.kwargs['tag'])
         form.cleaned_data['tags'] = tags
-        
+
         return super().form_valid(form)
 
 

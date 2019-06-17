@@ -1,11 +1,11 @@
 from django.db import models
 from django.db.models.signals import post_save
+from django.urls import reverse
 from django.dispatch import receiver
-
+from django.template.defaultfilters import slugify
 from charts.models import Chart
 
 from .hds import RaveChart as Rave_Chart
-
 
 class Gate(models.Model):
     GATES = [
@@ -78,10 +78,17 @@ class Gate(models.Model):
     ]
     number = models.PositiveSmallIntegerField(unique=True)
     name = models.CharField(max_length=20)
+    slug = models.SlugField(max_length=20)
     
     def __str__(self):
-        #return str(self.number)
         return "%d - Gate of %s" % (self.number, self.name)
+        
+    def get_absolute_url(self):
+        return reverse('hds:gate-detail', kwargs={'slug':self.slug})
+    
+    def save(self, *args, **kwargs):
+        self.slug = slugify(str(self))
+        super(Gate, self).save(*args, **kwargs)
     
     
     
@@ -129,6 +136,7 @@ class Channel(models.Model):
     gate1 = models.ForeignKey('Gate', on_delete=models.CASCADE, related_name='gate1')
     gate2 = models.ForeignKey('Gate', on_delete=models.CASCADE, related_name='gate2')
     name = models.CharField(max_length=20)
+    slug = models.SlugField(max_length=20)
     title = models.CharField(max_length=30)
     circuit_group = models.CharField(max_length=30)
     circuit = models.CharField(max_length=30)
@@ -138,14 +146,60 @@ class Channel(models.Model):
     
     def __str__(self):
         return "(%d-%d) Channel of %s " % (self.gate1.number, self.gate2.number, self.name)
+        
+    def get_absolute_url(self):
+        return reverse('hds:channel-detail', kwargs={'slug':self.slug})
+        
+    def save(self, *args, **kwargs):
+        self.slug = slugify(str(self))
+        super(Channel, self).save(*args, **kwargs)
     
-
+class Center(models.Model):
+    CENTERS = [
+        ('root', [53, 60, 52, 19, 39, 41, 58, 38, 54]),
+        ('sacral', [5,14, 29,59, 9, 3, 42, 27, 34]),
+        ('splenic', [48, 57, 44, 50, 32, 28, 18]),
+        ('solar_plexus', [36, 22, 37,6, 49, 55, 30]),
+        ('g', [1, 13, 25, 46, 2, 15, 10, 7]),
+        ('heart', [21, 40, 26, 51]),
+        ('throat', [62, 23, 56, 35, 12, 45, 33, 8, 31, 20, 16]),
+        ('ajna', [47, 24, 4, 11, 43, 17]),
+        ('head', [64, 61, 63]),
+    ]
+    
+    
+    name = models.CharField(max_length=20, null=True)
+    slug = models.SlugField(max_length=20)
+    gates = models.ManyToManyField(Gate)
+    
+    def __str__(self):
+        return self.name
+        
+    def get_absolute_url(self):
+        return reverse('hds:center-detail', kwargs={'slug':self.slug})
+    
+    def save(self, *args, **kwargs):
+        self.slug = slugify(str(self))
+        super(Center, self).save(*args, **kwargs)
 
 
 class RaveChart(models.Model):
     chart = models.OneToOneField(Chart, related_name='ravechart',  on_delete=models.CASCADE)
     gates = models.ManyToManyField(Gate)
     channels = models.ManyToManyField(Channel)
+    defined_centers = models.ManyToManyField(Center, related_name='defined')
+    undefined_centers = models.ManyToManyField(Center, related_name='undefined')
+    
+    
+    root = models.BooleanField(blank=True, null=True)
+    sacral = models.BooleanField(blank=True, null=True)
+    sacral = models.BooleanField(blank=True, null=True)
+    solar_plexus = models.BooleanField(blank=True, null=True)
+    g = models.BooleanField(blank=True, null=True)
+    heart = models.BooleanField(blank=True, null=True)
+    throat = models.BooleanField(blank=True, null=True)
+    ajna = models.BooleanField(blank=True, null=True)
+    head = models.BooleanField(blank=True, null=True)
 
     def __str__(self):
         return str(self.chart)
@@ -162,7 +216,19 @@ class RaveChart(models.Model):
         
         self.channels.set(channels)
         
-        self.save()
+        print('get_activated_centers:',rave.get_activated_centers())
+        for center in Center.objects.all():
+            print(center.slug)
+            if center.slug in rave.get_activated_centers():
+                setattr(self,center.slug,True)
+                self.defined_centers.add(center)
+            else:
+                setattr(self,center.slug,False)
+                self.undefined_centers.add(center)
+        
+    def save(self, *args, **kwargs):
+        self.make_rave()
+        super().save(*args, **kwargs)
 
 
 @receiver(post_save, sender=Chart)

@@ -116,7 +116,7 @@
     {% include 'blog.html' %}
     {% endblock %}
     <!-- ##### Blog Wrapper End ##### -->
-    
+
     <!-- ##### Content Wrapper Start ##### -->
     {% block content %}
     {% endblock %}
@@ -133,7 +133,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                   
+
                     <!-- Footer Nav Area -->
                     <div class="classy-nav-container breakpoint-off">
                         <!-- Classy Menu -->
@@ -167,7 +167,7 @@
                             </div>
                         </nav>
                     </div>
-                    
+
                     <!-- Footer Social Area -->
                     <div class="footer-social-area mt-30">
                         <a href="#" data-toggle="tooltip" data-placement="top" title="Pinterest"><i class="fa fa-pinterest" aria-hidden="true"></i></a>
@@ -181,12 +181,27 @@
             </div>
         </div>
 
-   
+
     </footer>
     <!-- ##### Footer Area End ##### -->
 
-    <!-- jQuery (Necessary for All JavaScript Plugins) -->
+    <!-- jQuery (Necessary for All JavaScript Plugins)
+    <script src="{% static 'js/jquery/jquery-2.2.4.min.js' %}"></script
+    
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    -->
+    
+    
     <script src="{% static 'js/jquery/jquery-2.2.4.min.js' %}"></script>
+    <!--
+    <script src="{% static 'js/jquery/jquery-1.8.3.min.js' %}"></script>
+    -->
+    <script src="{% static 'js/jquery-ui-1.9.2.js' %}"></script>
+    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+
     <!-- Popper js -->
     <script src="{% static 'js/popper.min.js' %}"></script>
     <!-- Bootstrap js -->
@@ -196,8 +211,14 @@
     <!-- Active js -->
     <script src="{% static 'js/active.js' %}"></script>
 
+    {% block footer %}
+    {% endblock %}
+
+
+
+
 </body>
-{% endblock %} 
+{% endblock %}
 
 </html>
 {% endblock %}

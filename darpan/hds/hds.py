@@ -6,21 +6,31 @@ import networkx as nx
 import swisseph
 swisseph.set_ephe_path('/usr/share/libswe/ephe/')
 
+DELTA = 0.0004
 
 
+from IPython import embed
 
-def binary_search(function, target, lo = 0, hi = None, delta = 0.0003):
+
+def diff(a1, a2):
+    angle_diff = ((a1 - a2 + 180 + 360) % 360) - 180
+    return angle_diff
+
+def binary_search(function, target, lo = 0, hi = None, delta = DELTA):
     val = None
     i = 0
+    
     while lo < hi:
+        
         mid = lo + (hi - lo)/2
-        diff = function(mid) - target
+        dif = diff(function(mid), target)
         i += 1
-        if diff < 0:
+        #print(i,lo,hi,dif,delta)
+        if dif < 0:
             lo = mid
         else:
             hi = mid
-        if abs(diff) < delta:
+        if abs(dif) < delta:
             return mid
         if i > 30:
             return None
@@ -87,7 +97,7 @@ class RaveGraph(object):
         ('root', [53, 60, 52, 19, 39, 41, 58, 38, 54, ]),
         ('sacral', [5,14, 29,59, 9, 3, 42, 27, 34]),
         ('splenic', [48, 57, 44, 50, 32, 28, 18]),
-        ('solar-plexus', [36, 22, 37,6, 49, 55, 30]),
+        ('solar_plexus', [36, 22, 37,6, 49, 55, 30]),
         ('g', [1, 13, 25, 46, 2, 15, 10, 7]),
         ('heart', [21, 40, 26, 51]),
         ('throat', [62, 23, 56, 35, 12, 45, 33, 8, 31, 20, 16]),
@@ -137,18 +147,40 @@ class RaveGraph(object):
     ]
     
     
-    def __init__(self):
+    def __init__(self, activated_gates):
         self.graph = self.create_graph()
+        for g in activated_gates:
+            self.set_activated_gate(g)
+        
+        self.activated_channels = self.get_activated_channels()
+        for g1,g2 in self.activated_channels:
+            self.graph[g1][g2]['activated'] = True
+            c1 = self.graph.node[g1]['center']
+            c2 = self.graph.node[g2]['center']
+            self.graph.node[c1]['activated'] =  True
+            self.graph.node[c2]['activated'] =  True
+            
+        self.type = self.get_type()
+            
+    def get_type(self):
+        if self.graph.node['sacral']['activated']:
+            return 'generator'
+        return 'other'
+            
+        
+    
         
 
     def create_graph(self):
         rave = nx.Graph()    
         rave.add_nodes_from(range(1,65), type='gate', activated=False)    
         for center, gates in RaveGraph.CENTERS:
-            rave.add_node(center, type='center')
-            rave.add_edges_from([(center, gate) for gate in gates], type='center-gate')        
+            rave.add_node(center, type='center', activated=False)
+            rave.add_edges_from([(center, gate) for gate in gates], type='center-gate')
+            for g in gates:
+                rave.node[g]['center'] = center
         for ports, name, desc, circuit in RaveGraph.CHANNELS:
-            rave.add_edge(*ports, name=name, description=desc, circuit=circuit, type='channel')
+            rave.add_edge(*ports, name=name, description=desc, circuit=circuit, type='channel', activated=False)
         return rave
     
     @property
@@ -173,9 +205,10 @@ class RaveGraph(object):
     
     def get_activated_channels(self):
         return [channel for channel in self.channels if (self.graph.node[channel[0]]['activated']==True and self.graph.node[channel[1]]['activated']==True)]
-
-
-
+    
+    def get_activated_centers(self):
+        return [n for n in self.centers if self.graph.nodes(data=True)[n]['activated']==True]
+    
 
 class RaveChart(object):
     
@@ -261,10 +294,17 @@ class RaveChart(object):
         self.activated_gates = self.generate_activated_gates(self.personality, self.design)
         
         self.rave_graph = self.create_rave_graph(self.personality, self.design)
+        self.type = self.rave_graph.type
         
         self.determination = self.calculate_determination()
         self.transformation = self.calculate_transformation()
         self.environment = self.calculate_environment()
+    
+    
+    
+    
+    def __str__(self):
+        return "Rave: %s "%(str(self.birth_date))
         
     def calculate_environment(self):
         """
@@ -340,11 +380,14 @@ class RaveChart(object):
         return ports
         
     def create_rave_graph(self, personality_gates, design_gates):
-        rave_graph = RaveGraph()
-        for planet, numbers in personality_gates.items():
-            rave_graph.set_activated_gate(numbers[0])
-        for planet, numbers in design_gates.items():
-            rave_graph.set_activated_gate(numbers[0])
+        
+        activated_gates = [n[0] for n in personality_gates.values()]
+        activated_gates += [n[0] for n in design_gates.values()]
+        rave_graph = RaveGraph(activated_gates)
+        #for planet, numbers in personality_gates.items():
+        #    rave_graph.set_activated_gate(numbers[0])
+        #for planet, numbers in design_gates.items():
+        #    rave_graph.set_activated_gate(numbers[0])
         return rave_graph
         
     def generate_activated_gates(self, personality, design):        
@@ -364,12 +407,20 @@ class RaveChart(object):
     def get_activated_channels(self):
         return self.rave_graph.get_activated_channels()
         
+    def get_activated_centers(self):
+        return self.rave_graph.get_activated_centers()
+        
+        
         
     def find_design_date(self):
         self.target_design_sun = (360+ self.birth_chart.sun - 88) % 360
         lo = self.birth_date - timedelta(days=94)
         hi = self.birth_date - timedelta(days=86)
-        return binary_search(get_sun, self.target_design_sun, lo, hi)
+        design_date = binary_search(get_sun, self.target_design_sun, lo, hi)
+        
+        if not design_date:
+            raise Exception('SOCORRO')
+        return design_date
     
     def degress_to_hexagram(self, degrees):        
         angle = (360 + degrees - RaveChart.FIRST_HEXAGRAM) % 360        
@@ -443,7 +494,45 @@ class RaveChart(object):
         
         
 
+
+import random
+from random import randrange
+from datetime import timedelta
+
+def random_date(start, end):
+    """
+    This function will return a random datetime between two datetime 
+    objects.
+    """
+    delta = end - start
+    int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
+    random_second = randrange(int_delta)
+    return start + timedelta(seconds=random_second)
+
+def test():
+    s = datetime(1900,1,1,12,0)
+    e = datetime(2020,1,1,12,0)
+    random.seed(3)
+    dates = sorted([random_date(s, e) for i in range(1000)])
+    charts = []
+    for i,d in enumerate(dates):
+        r = RaveChart(d)
+        charts.append(r)
+        print(i,r, r.type)
+    print(len([r for r in charts if r.type=='generator']))
+        
+        
+
+
+
 if __name__=='__main__':
+    #gabs = RaveChart(datetime(1996,12,15,14,11))
+    #test()
+    darpan = RaveChart(datetime(1986,12,22,8,34))
+    print(darpan.get_activated_centers())
+    embed()
+    
+def c():
     darpan = RaveChart(datetime(1986,12,22,8,34))
     puja = RaveChart(datetime(1985,9,21,12,15))
     tiago = RaveChart(datetime(1993,7,5,17))

@@ -4,15 +4,21 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormMixin
 from django.db import transaction
 from django.http import HttpResponseRedirect
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+
 # Create your views here.
 
 from dateutil.parser import parse
+from dateparser import parse
 
 from formtools.wizard.views import SessionWizardView as WizardView
 
 from .models import Chart
 from .forms import ChartForm, ImportChartForm, ChartFormSet
 from .forms import *
+
+from cities.models import Country, City
 
 from IPython import embed
 
@@ -36,64 +42,33 @@ class FormListView(FormMixin, generic.ListView):
         return self.get(request, *args, **kwargs)
 
 
-
+@method_decorator(login_required, name='dispatch')
 class ChartListView(FormListView):
     model = Chart
     form_class = ChartForm
+    
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.select_related('city', 'owner')
+        qs = qs.filter(owner=self.request.user)
+        return qs
 
 class ChartDetailView(generic.DetailView):
     model = Chart
 
+class ChartUpdateView(generic.UpdateView):
+    model = Chart
+    form_class = ChartForm
+
 class ChartCreateView(generic.CreateView):
     model = Chart
-    fields = ['name', 'date', 'time', 'timezone', 'city', 'country']
+    form_class = ChartForm
+    #fields = ['name', 'date', 'time', 'timezone', 'city', 'country']
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
         return super().form_valid(form)
 
-class ChartImportView(generic.edit.FormView):
-     form_class = ImportChartForm
-     template_name = 'charts/import.html'
-     success_url = reverse_lazy('charts:import2')
-
-
-     def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        charts = form.process_charts()
-        return super().form_valid(form)
-
-
-class MultipleChartCreate(generic.CreateView):
-    model = Chart
-    fields = ['name', 'date', 'time', 'city']
-    template_name = 'charts/import_multiple_form.html'
-    success_url = reverse_lazy('charts:list')
-
-    def get_context_data(self, **kwargs):
-        data = super(MultipleChartCreate, self).get_context_data(**kwargs)
-        print(self.request.GET)
-        if self.request.POST:
-            data['charts'] = ChartFormSet(self.request.POST)
-        else:
-            data['charts'] = ChartFormSet(initial=[{'name':"Xuxu"}, {'name':'Beleza'}])
-        return data
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        charts = context['charts']
-
-        for form in charts:
-            form.instance.owner = self.request.user
-
-        with transaction.atomic():
-            self.object = form.save()
-
-            if charts.is_valid():
-                charts.instance = self.object
-                charts.save()
-        return super(MultipleChartCreate, self).form_valid(form)
 
 
 
@@ -115,6 +90,55 @@ class ContactWizard(WizardView):
 
         return self.initial_dict.get(step, {})
 
+    def find_country(self, name):
+        name = name.strip().lower()
+        qs = Country.objects.filter(name__istartswith=name)
+        if len(qs)==1:
+            return qs[0].id
+
+        qs = Country.objects.filter(code2__istartswith=name)
+        if len(qs)==1:
+            return qs[0].id
+
+        qs = Country.objects.filter(code3__istartswith=name)
+        if len(qs)==1:
+            return qs[0].id
+
+        qs = Country.objects.filter(alternate_names__icontains=name)
+        if len(qs)==1:
+            return qs[0].id
+        if '(us)' in name:
+            return Country.objects.get(name='United States').id
+        return None
+
+    def find_city(self, country_id, city_name):
+
+        if country_id:
+            qs = City.objects.filter(country__id=country_id)
+        else:
+            qs = City.objects.all()
+
+        qs2 = qs.filter(name__icontains=city_name)
+        if len(qs2)==1:
+            return qs2[0].id
+
+        m = re.match('(.*) \((.*)\)', city_name)
+        if m:
+            m = m.groups()
+            city_name = m[0]
+            region = m[1]
+
+            qs2 = qs.filter(name=city_name)
+            if len(qs2)==1:
+                return qs2[0].id
+            else:
+                qs3 = qs2.filter(region__name=region)
+                if len(qs3)==1:
+                    return qs3[0].id
+
+            
+
+        print('FAIL: ', city_name)
 
     def process_charts(self, text):
         pattern = re.compile("(.*) \((.+?)\), (.+?), (.+?), (.+?)Edit")
@@ -122,15 +146,17 @@ class ContactWizard(WizardView):
         charts = []
 
         for i, line in enumerate(text.split('\n')):
-            m = re.match(pattern,line).groups()
-            d = {'name':m[0],
-            'gender': m[1],
-            'date':self.parse_date(m[2])['date'],
-            'time':self.parse_date(m[2])['time'],
-            'city':m[3],
-            'country':m[4],
-            }
-            charts.append(d)
+            m = re.match(pattern,line)
+            if m:
+                m = m.groups()
+                d = {'name':m[0],
+                'gender': m[1],
+                'date':self.parse_date(m[2])['date'],
+                'time':self.parse_date(m[2])['time'],
+                }
+                d['country'] = self.find_country(m[4])
+                d['city'] = self.find_city(d['country'], m[3])
+                charts.append(d)
         return charts
 
     def parse_date(self, s):
@@ -140,7 +166,8 @@ class ContactWizard(WizardView):
             s = s.replace('unknown time', '')
             return {'date':parse(s).date(), 'time':''}
         d = parse(s)
-        dic = {'date':d.date(), 'time':d.time()}
+        if d:
+            dic = {'date':d.date(), 'time':d.time()}
         return dic
 
     def done(self, form_list, **kwargs):

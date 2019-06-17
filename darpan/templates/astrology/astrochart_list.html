@@ -3,21 +3,25 @@
 {% block content %}
 <h1>Chart List</h1>
 <div class="container">
-  <table class="table">
+  <table class="table" id="astrochart">
     <thead>
     <tr>
     <th>Name</th>
     <th>Date</th>
     <th>Time</th>
     <th>City</th>
+    <th>Points</th>
+    <th>Percentage</th>
     <th>Sun</th>
     <th>Moon</th>
-    <th>Asc</th>
+    <th>Mercury</th>
+    <th>Venus</th>
+    <th>Mars</th>
     </tr>
     </thead>
+    
+    
     <tbody>
-
-
     {% for astro in astrochart_list %}
 
     <tr>
@@ -25,9 +29,14 @@
       <td>{{ astro.chart.date }}</td>
       <td>{{ astro.chart.time }}</td>
       <td>{{ astro.chart.city }}</td>
+      <td>{{ astro.compatibility.0 }}</td>
+      <td>{{ astro.compatibility.1 }}</td>
 
       <td><a href="{% url 'astro:planetsign' astro.planets.0.field astro.planets.0.sign %}">{{astro.planets.0.sign}}</a></td>
       <td><a href="{% url 'astro:planetsign' astro.planets.1.field astro.planets.1.sign %}">{{astro.planets.1.sign}}</a></td>
+      <td><a href="{% url 'astro:planetsign' astro.planets.2.field astro.planets.2.sign %}">{{astro.planets.2.sign}}</a></td>
+      <td><a href="{% url 'astro:planetsign' astro.planets.3.field astro.planets.3.sign %}">{{astro.planets.3.sign}}</a></td>
+      <td><a href="{% url 'astro:planetsign' astro.planets.4.field astro.planets.4.sign %}">{{astro.planets.4.sign}}</a></td>
     </tr>
     {% endfor %}
     </tbody>
@@ -36,3 +45,11 @@
 
 </div>
 {% endblock content %}
+
+{% block footer %}
+<script>
+$(document).ready(function() {
+    $('#astrochart').DataTable();
+} );
+</script>
+{% endblock footer %}

@@ -24,7 +24,7 @@ app_name = 'numerology'
 urlpatterns = [
     path('', PostListFormView.as_view(), name='home'),
     path('post/create/', PostCreate.as_view(), name='post_create'),
-    path('chart/<str:pk>', NumerologyDetailView.as_view()),
+    path('chart/<str:pk>', NumerologyDetailView.as_view(), name='detail'),
     path('<str:tag>', PostListFormView.as_view(), name='posts'),
     path('<str:tag>/<str:tag2>', PostListFormView.as_view(), name='posts'),
 ]

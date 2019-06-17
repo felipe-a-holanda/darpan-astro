@@ -35,6 +35,12 @@
                                             <li><a href="coming-soon.html">Coming Soon</a></li>
                                         </ul>
                                     </li>
+
+                                    <li><a href="{% url 'charts:list' %}">Charts</a>
+
+                                    </li>
+
+
                                     <li><a href="#">Numerology</a>
                                         <ul class="dropdown">
                                             <li><a href="{% url 'numerology:home' %}">Posts</a></li>
@@ -46,48 +52,59 @@
                                                     <li><a href="{% url 'numerology:posts' '11' %}">11</a></li>
                                                     <li><a href="{% url 'numerology:posts' '22' %}">22</a></li>
                                                     <li><a href="{% url 'numerology:posts' '33' %}">33</a></li>
-                                                    
-                                                    
                                                 </ul>
                                             </li>
-                                            <li><a href="#">Catagory 1</a></li>
-                                            <li><a href="#">Catagory 1</a></li>
                                         </ul>
                                     </li>
+
+
+                                    <li><a href="#">Astrology</a>
+                                        <ul class="dropdown">
+                                            <li><a href="{% url 'astrology:list' %}">Charts</a></li>
+                                            <li><a href="#">Planets</a>
+
+                                            </li>
+                                        </ul>
+                                    </li>
+
+
+
+
+
                                     <li><a href="about-us.html">About Us</a></li>
-                                    <li><a href="#">Megamenu</a>
+                                    <li><a href="#">Planets</a>
                                         <div class="megamenu">
                                             <ul class="single-mega cn-col-4">
                                                 <li class="title">Headline 1</li>
-                                                <li><a href="#">Mega Menu Item 1</a></li>
-                                                <li><a href="#">Mega Menu Item 2</a></li>
-                                                <li><a href="#">Mega Menu Item 3</a></li>
-                                                <li><a href="#">Mega Menu Item 4</a></li>
-                                                <li><a href="#">Mega Menu Item 5</a></li>
+                                                {% for planet in planets %}
+                                                {% if forloop.counter <= 7  %}
+                                                <li><a href="{% url 'astrology:planetsign' planet 'Capricorn' %}">{{planet}}</a></li>
+                                                {%endif%}
+                                                {% endfor %}
                                             </ul>
                                             <ul class="single-mega cn-col-4">
                                                 <li class="title">Headline 2</li>
-                                                <li><a href="#">Mega Menu Item 1</a></li>
-                                                <li><a href="#">Mega Menu Item 2</a></li>
-                                                <li><a href="#">Mega Menu Item 3</a></li>
-                                                <li><a href="#">Mega Menu Item 4</a></li>
-                                                <li><a href="#">Mega Menu Item 5</a></li>
+                                                {% for planet in planets %}
+                                                {% if forloop.counter > 7 and forloop.counter <= 10 %}
+                                                <li><a href="{% url 'astrology:planetsign' planet 'Capricorn' %}">{{planet}}</a></li>
+                                                {%endif%}
+                                                {% endfor %}
                                             </ul>
                                             <ul class="single-mega cn-col-4">
                                                 <li class="title">Headline 3</li>
-                                                <li><a href="#">Mega Menu Item 1</a></li>
-                                                <li><a href="#">Mega Menu Item 2</a></li>
-                                                <li><a href="#">Mega Menu Item 3</a></li>
-                                                <li><a href="#">Mega Menu Item 4</a></li>
-                                                <li><a href="#">Mega Menu Item 5</a></li>
+                                                {% for planet in planets %}
+                                                {% if forloop.counter > 10 and forloop.counter <= 17 %}
+                                                <li><a href="{% url 'astrology:planetsign' planet 'Capricorn' %}">{{planet}}</a></li>
+                                                {%endif%}
+                                                {% endfor %}
                                             </ul>
                                             <ul class="single-mega cn-col-4">
                                                 <li class="title">Headline 4</li>
-                                                <li><a href="#">Mega Menu Item 1</a></li>
-                                                <li><a href="#">Mega Menu Item 2</a></li>
-                                                <li><a href="#">Mega Menu Item 3</a></li>
-                                                <li><a href="#">Mega Menu Item 4</a></li>
-                                                <li><a href="#">Mega Menu Item 5</a></li>
+                                                {% for planet in planets %}
+                                                {% if forloop.counter > 17 and forloop.counter <= 24 %}
+                                                <li><a href="{% url 'astrology:planetsign' planet 'Capricorn' %}">{{planet}}</a></li>
+                                                {%endif%}
+                                                {% endfor %}
                                             </ul>
                                         </div>
                                     </li>

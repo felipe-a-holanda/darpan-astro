@@ -109,6 +109,7 @@ class UserProfile(models.Model):
     facebook = models.URLField(default='', blank=True)
     instagram = models.URLField(default='', blank=True)
     
+    
     #Local Time:
     birthdate = models.DateField(null=True, blank=True)
     birthtime = models.TimeField(null=True, blank=True)
@@ -124,6 +125,10 @@ class UserProfile(models.Model):
     
     def __str__(self):
         return self.user.username
+    
+    @property
+    def chart(self):
+        return self.user.charts.first()
         
     def convert_timezone(self):
         if self.birthdate:
