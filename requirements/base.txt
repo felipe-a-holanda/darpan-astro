@@ -1,4 +1,4 @@
-Django==2.1.4
+Django==2.2.13
 django-autoslug==1.9.4
 django-reverse-admin==2.3.0
 django-taggit==0.23.0
